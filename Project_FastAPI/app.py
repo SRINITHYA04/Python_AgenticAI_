@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from pydantic import BaseModel, Field
 
 app = FastAPI(title="FastAPI Crash course")
 
@@ -11,7 +12,7 @@ def root():
     return{"messege":"Hello Srinithya"}
 
 # sending single parameter
-@app.get("/users/{user_id}")
+@app.get("/user/{user_id}")
 def user_name(user_id:int):
     return{"user_id":user_id, "type":str(type(user_id))}
 
@@ -20,3 +21,31 @@ def user_name(user_id:int):
 @app.get("/search")
 def search(q: str, page: int=1, limit: int=10):
     return{"q":q, "page": page, "limit":limit}
+
+class userCreate(BaseModel):
+    name: str
+    email: str
+    age:int | None = None
+
+@app.post("/users")
+def create_user(payload: userCreate):
+    return{"created": True, "User": payload.model_dump()}
+
+# curl -X POST http://127.0.0.1:8000/users \
+# -H "Content-Type: application/json" \
+# -d '{"name":"Sri","email":"Sri@demo.com","age":22}'
+
+
+class ProductCreate(BaseModel):
+    name: str = Field(min_length=2, max_length=50)
+    price: float = Field(ge=0)
+    stock: int= Field(ge=0)
+
+@app.post("/products")
+def create_product(p: ProductCreate):
+    return p.model_dump()
+
+
+# curl -X POST http://127.0.0.1:8000/products \
+# -H "Content-Type: application/json" \
+# -d '{"name":"pen","price":10.5,"stock":100}'
