@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from pydantic import BaseModel, Field
 
 app = FastAPI(title="FastAPI Crash course")
@@ -49,3 +49,7 @@ def create_product(p: ProductCreate):
 # curl -X POST http://127.0.0.1:8000/products \
 # -H "Content-Type: application/json" \
 # -d '{"name":"pen","price":10.5,"stock":100}'
+
+@app.post("/items", status_code=status.HTTP_226_IM_USED)
+def create_item():
+    return {"created": True}
