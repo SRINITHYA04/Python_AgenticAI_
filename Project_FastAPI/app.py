@@ -1,4 +1,4 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel, Field
 
 app = FastAPI(title="FastAPI Crash course")
@@ -53,3 +53,11 @@ def create_product(p: ProductCreate):
 @app.post("/items", status_code=status.HTTP_226_IM_USED)
 def create_item():
     return {"created": True}
+
+FAKE_DB={1:"Sri", 2:"Varsh"}
+
+@app.get("/user/db/{user_id}")
+def User_from_DB(user_id: int):
+    if user_id not in FAKE_DB:
+        raise HTTPException(status_code =404, detail="User not found")
+    return {"user_id": user_id, "Name":FAKE_DB[user_id]}
